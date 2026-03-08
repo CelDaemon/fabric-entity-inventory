@@ -35,33 +35,33 @@ public class TestEntityInventory implements Container {
     }
 
     @Override
-    public ItemStack getItem(int i) {
-        if(i < container.getContainerSize())
-            return container.getItem(i);
-        return equipment.get(mapEquipmentSlot(i));
+    public ItemStack getItem(int slotId) {
+        if(slotId < container.getContainerSize())
+            return container.getItem(slotId);
+        return equipment.get(mapEquipmentSlot(slotId));
     }
 
     @Override
-    public ItemStack removeItem(int i, int j) {
-        if(i < container.getContainerSize())
-            return container.removeItem(i, j);
-        return equipment.set(mapEquipmentSlot(i), ItemStack.EMPTY);
+    public ItemStack removeItem(int slotId, int count) {
+        if(slotId < container.getContainerSize())
+            return container.removeItem(slotId, count);
+        return equipment.set(mapEquipmentSlot(slotId), ItemStack.EMPTY);
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int i) {
-        if(i < container.getContainerSize())
-            return container.removeItemNoUpdate(i);
-        return equipment.set(mapEquipmentSlot(i), ItemStack.EMPTY);
+    public ItemStack removeItemNoUpdate(int slotId) {
+        if(slotId < container.getContainerSize())
+            return container.removeItemNoUpdate(slotId);
+        return equipment.set(mapEquipmentSlot(slotId), ItemStack.EMPTY);
     }
 
     @Override
-    public void setItem(int i, ItemStack itemStack) {
-        if(i < container.getContainerSize()) {
-            container.setItem(i, itemStack);
+    public void setItem(int slotId, ItemStack newItem) {
+        if(slotId < container.getContainerSize()) {
+            container.setItem(slotId, newItem);
             return;
         }
-        equipment.set(mapEquipmentSlot(i), itemStack);
+        equipment.set(mapEquipmentSlot(slotId), newItem);
     }
 
     @Override

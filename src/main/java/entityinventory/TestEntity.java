@@ -19,8 +19,8 @@ public class TestEntity extends LivingEntity implements MenuProvider {
     public static final int CONTAINER_SIZE = 9;
     private final SimpleContainer container = new SimpleContainer(CONTAINER_SIZE);
     private final TestEntityInventory inventory = new TestEntityInventory(container, equipment, this);
-    protected TestEntity(EntityType<? extends LivingEntity> entityType, Level level) {
-        super(entityType, level);
+    protected TestEntity(EntityType<? extends LivingEntity> type, Level level) {
+        super(type, level);
     }
 
     @Override
@@ -29,8 +29,8 @@ public class TestEntity extends LivingEntity implements MenuProvider {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand interactionHand) {
-        if(interactionHand != InteractionHand.MAIN_HAND)
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        if(hand != InteractionHand.MAIN_HAND)
             return InteractionResult.PASS;
 
         if(!level().isClientSide()) {
@@ -40,25 +40,25 @@ public class TestEntity extends LivingEntity implements MenuProvider {
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new TestEntityMenu(i, player.getInventory(), this.inventory, this);
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return new TestEntityMenu(containerId, player.getInventory(), this.inventory, this);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput valueOutput) {
-        super.addAdditionalSaveData(valueOutput);
-        ContainerHelper.saveAllItems(valueOutput, container.getItems());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        ContainerHelper.saveAllItems(output, container.getItems());
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput valueInput) {
-        super.readAdditionalSaveData(valueInput);
-        ContainerHelper.loadAllItems(valueInput, container.getItems());
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        ContainerHelper.loadAllItems(input, container.getItems());
     }
 
     @Override
-    protected void dropEquipment(ServerLevel serverLevel) {
-        super.dropEquipment(serverLevel);
+    protected void dropEquipment(ServerLevel level) {
+        super.dropEquipment(level);
         destroyVanishingCursedItems();
         inventory.dropAll();
     }

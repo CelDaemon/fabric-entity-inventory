@@ -8,20 +8,12 @@ import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 public class EnglishLanguageProvider extends FabricLanguageProvider {
-    public EnglishLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
-        super(dataOutput, registryLookup);
+    public EnglishLanguageProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
+        super(output, lookup);
     }
 
-    /**
-     * Implement this method to register languages.
-     *
-     * <p>Call {@link TranslationBuilder#add(String, String)} to add a translation.
-     *
-     * @param registryLookup
-     * @param translationBuilder
-     */
     @Override
-    public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
-        translationBuilder.add(Entities.TEST_ENTITY, "Test Entity");
+    public void generateTranslations(HolderLookup.Provider lookup, TranslationBuilder builder) {
+        builder.add(Entities.TEST_ENTITY, "Test Entity");
     }
 }

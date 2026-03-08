@@ -12,7 +12,7 @@ public class Menus {
     public static final MenuType<TestEntityMenu> TEST_MENU = register("test", TestEntityMenu::new);
 
     private static <T extends AbstractContainerMenu> MenuType<T> register(String name, MenuType.MenuSupplier<T> supplier) {
-        return Registry.register(BuiltInRegistries.MENU, Identifier.fromNamespaceAndPath(EntityInventory.MOD_ID, name), new MenuType<T>(supplier, FeatureFlags.DEFAULT_FLAGS));
+        return Registry.register(BuiltInRegistries.MENU, EntityInventory.id(name), new MenuType<T>(supplier, FeatureFlags.DEFAULT_FLAGS));
     }
 
     public static void init() {

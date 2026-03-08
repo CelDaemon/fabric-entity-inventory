@@ -17,11 +17,10 @@ public class EntityInventoryClient implements ClientModInitializer {
 	public static AtomicReference<PlayerSkin> skin = new AtomicReference<>(DefaultPlayerSkin.getDefaultSkin());
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-
 		EntityRenderers.register(
 				Entities.TEST_ENTITY, TestEntityRenderer::new
 		);
+
 		MenuScreens.register(
 				Menus.TEST_MENU,
 				TestEntityScreen::new

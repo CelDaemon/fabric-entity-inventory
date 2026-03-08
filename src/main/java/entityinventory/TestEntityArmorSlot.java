@@ -14,19 +14,19 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class TestEntityArmorSlot extends Slot {
-    private final EquipmentSlot equipmentSlot;
+    private final EquipmentSlot slotType;
     @Nullable
-    private final LivingEntity entity;
-    public TestEntityArmorSlot(Container container, int i, int j, int k, EquipmentSlot equipmentSlot, @Nullable LivingEntity entity) {
-        super(container, i, j, k);
-        this.equipmentSlot = equipmentSlot;
-        this.entity = entity;
+    private final LivingEntity owner;
+    public TestEntityArmorSlot(Container container, int slotId, int x, int y, EquipmentSlot slotType, @Nullable LivingEntity owner) {
+        super(container, slotId, x, y);
+        this.slotType = slotType;
+        this.owner = owner;
     }
 
     @Override
     public boolean mayPlace(ItemStack newStack) {
         final var equippable = newStack.get(DataComponents.EQUIPPABLE);
-        return equippable != null && equippable.slot() == equipmentSlot && super.mayPlace(newStack);
+        return equippable != null && equippable.slot() == slotType && super.mayPlace(newStack);
     }
 
     @Override
@@ -37,13 +37,13 @@ public class TestEntityArmorSlot extends Slot {
 
     @Override
     public @Nullable Identifier getNoItemIcon() {
-        return InventoryMenu.TEXTURE_EMPTY_SLOTS.get(equipmentSlot);
+        return InventoryMenu.TEXTURE_EMPTY_SLOTS.get(slotType);
     }
 
     @Override
     public void setByPlayer(ItemStack newStack, ItemStack oldStack) {
-        if(entity != null)
-            entity.onEquipItem(equipmentSlot, oldStack, newStack);
+        if(owner != null)
+            owner.onEquipItem(slotType, oldStack, newStack);
 
         super.setByPlayer(newStack, oldStack);
     }
