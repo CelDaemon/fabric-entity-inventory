@@ -1,0 +1,71 @@
+package entityinventory;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.*;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.InventoryCarrier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public class TestEntity extends LivingEntity implements MenuProvider, InventoryCarrier {
+    public static final int CONTAINER_SIZE = 9;
+    private final SimpleContainer container = new SimpleContainer(CONTAINER_SIZE);
+    private final TestEntityInventory inventory = new TestEntityInventory(container, equipment, this);
+    protected TestEntity(EntityType<? extends LivingEntity> entityType, Level level) {
+        super(entityType, level);
+    }
+
+    @Override
+    public @NonNull HumanoidArm getMainArm() {
+        return HumanoidArm.RIGHT;
+    }
+
+    @Override
+    public InteractionResult interact(Player player, InteractionHand interactionHand) {
+        if(interactionHand != InteractionHand.MAIN_HAND)
+            return InteractionResult.PASS;
+
+        if(!level().isClientSide()) {
+            player.openMenu(this);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new TestEntityMenu(i, player.getInventory(), this.inventory, this);
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput valueOutput) {
+        super.addAdditionalSaveData(valueOutput);
+        writeInventoryToTag(valueOutput);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput valueInput) {
+        super.readAdditionalSaveData(valueInput);
+        readInventoryFromTag(valueInput);
+    }
+
+    @Override
+    public SimpleContainer getInventory() {
+        return container;
+    }
+
+    @Override
+    protected void dropEquipment(ServerLevel serverLevel) {
+        equipment.dropAll(this);
+        container.removeAllItems().forEach(x -> this.drop(x, true, false));
+    }
+}

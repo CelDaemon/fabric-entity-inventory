@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "entity-inventory",
+	"version": "${version}",
+	"name": "Entity Inventory",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/entity-inventory/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"entityinventory.EntityInventory"
+		],
+		"client": [
+			"entityinventory.EntityInventoryClient"
+		],
+		"fabric-datagen": [
+			"entityinventory.EntityInventoryDataGenerator"
+		]
+	},
+	"mixins": [
+		"entity-inventory.mixins.json",
+		{
+			"config": "entity-inventory.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"accessWidener": "entity-inventory.classtweaker"
+}
