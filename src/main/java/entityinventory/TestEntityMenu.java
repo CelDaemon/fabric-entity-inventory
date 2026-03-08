@@ -30,7 +30,7 @@ public class TestEntityMenu extends AbstractContainerMenu {
                             container,
                             TestEntity.CONTAINER_SIZE + i,
                             8,
-                            AbstractContainerMenu.SLOT_SIZE * i,
+                            8 + AbstractContainerMenu.SLOT_SIZE * i,
                             TestEntityInventory.EQUIPMENT_MAPPING[i],
                             entity
                     )
