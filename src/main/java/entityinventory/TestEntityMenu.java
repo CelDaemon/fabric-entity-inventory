@@ -18,51 +18,34 @@ public class TestEntityMenu extends AbstractContainerMenu {
     private final Container container;
 
     public TestEntityMenu(int containerId, Inventory inventory) {
-        this(containerId, inventory, new SimpleContainer(TestEntity.CONTAINER_SIZE + TestEntityInventory.EQUIPMENT_SIZE), null);
+        this(containerId, inventory, new SimpleContainer(TestEntity.CONTAINER_SIZE + TestEntityInventory.EQUIPMENT_MAPPING.length), null);
     }
     public TestEntityMenu(int containerId, Inventory inventory, Container container, @Nullable TestEntity entity) {
         super(Menus.TEST_MENU, containerId);
         this.container = container;
 
-        for (var i = 0; i < TestEntityInventory.EQUIPMENT_SIZE; i++) {
-            final var equipmentType = TestEntityInventory.EQUIPMENT_MAPPING[i];
+        for (var i = 0; i < TestEntityInventory.EQUIPMENT_MAPPING.length; i++)
             addSlot(
-                    new Slot(
-                        container,
+                    new TestEntityArmorSlot(
+                            container,
                             TestEntity.CONTAINER_SIZE + i,
                             8,
-                            AbstractContainerMenu.SLOT_SIZE * i
-                    ) {
-                        @Override
-                        public boolean mayPlace(ItemStack itemStack) {
-                            final var equippable = itemStack.get(DataComponents.EQUIPPABLE);
-                            if(equippable == null)
-                                return false;
-                            if(equippable.slot() != equipmentType)
-                                return false;
-                            return super.mayPlace(itemStack);
-                        }
-
-                        @Override
-                        public @Nullable Identifier getNoItemIcon() {
-                            return InventoryMenu.TEXTURE_EMPTY_SLOTS.get(equipmentType);
-                        }
-
-                        @Override
-                        public void setByPlayer(ItemStack itemStack, ItemStack itemStack2) {
-                            if (entity != null) {
-                                entity.onEquipItem(equipmentType, itemStack2, itemStack);
-                            }
-                            super.setByPlayer(itemStack, itemStack2);
-                        }
-                    }
+                            AbstractContainerMenu.SLOT_SIZE * i,
+                            TestEntityInventory.EQUIPMENT_MAPPING[i],
+                            entity
+                    )
             );
-        }
 
         for (var x = 0; x < 3; x++) {
-            for(var y = 0; y < 3; y++) {
-                addSlot(new Slot(container,x + y * 3, 62 + x * AbstractContainerMenu.SLOT_SIZE, 17 + y * AbstractContainerMenu.SLOT_SIZE));
-            }
+            for(var y = 0; y < 3; y++)
+                addSlot(
+                        new Slot(
+                                container,
+                                x + y * 3,
+                                62 + x * AbstractContainerMenu.SLOT_SIZE,
+                                17 + y * AbstractContainerMenu.SLOT_SIZE
+                        )
+                );
         }
 
         addStandardInventorySlots(inventory, 8, 84);

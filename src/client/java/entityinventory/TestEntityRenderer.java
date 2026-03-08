@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 
 public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, AvatarRenderState, PlayerModel> {
@@ -24,13 +23,14 @@ public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, AvatarR
     }
 
     @Override
-    public void extractRenderState(TestEntity livingEntity, AvatarRenderState livingEntityRenderState, float f) {
-        HumanoidMobRenderer.extractHumanoidRenderState(livingEntity, livingEntityRenderState, f, itemModelResolver);
-        super.extractRenderState(livingEntity, livingEntityRenderState, f);
+    public void extractRenderState(TestEntity entity, AvatarRenderState state, float f) {
+        HumanoidMobRenderer.extractHumanoidRenderState(entity, state, f, itemModelResolver);
+        state.skin = EntityInventoryClient.skin.get();
+        super.extractRenderState(entity, state, f);
     }
 
     @Override
-    public Identifier getTextureLocation(AvatarRenderState livingEntityRenderState) {
-        return MissingTextureAtlasSprite.getLocation();
+    public Identifier getTextureLocation(AvatarRenderState state) {
+        return state.skin.body().texturePath();
     }
 }

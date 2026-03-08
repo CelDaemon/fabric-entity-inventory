@@ -9,26 +9,23 @@ import net.minecraft.world.item.ItemStack;
 
 public class TestEntityInventory implements Container {
     public static final EquipmentSlot[] EQUIPMENT_MAPPING = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
-    public static final int EQUIPMENT_SIZE = EQUIPMENT_MAPPING.length;
     private final Container container;
-    private final int containerSize;
     private final EntityEquipment equipment;
     private final LivingEntity entity;
 
     public TestEntityInventory(Container container, EntityEquipment equipment, LivingEntity entity) {
         this.container = container;
-        containerSize = container.getContainerSize();
         this.equipment = equipment;
         this.entity = entity;
     }
 
     private EquipmentSlot mapEquipmentSlot(int slot) {
-        return EQUIPMENT_MAPPING[slot - containerSize];
+        return EQUIPMENT_MAPPING[slot - container.getContainerSize()];
     }
 
     @Override
     public int getContainerSize() {
-        return containerSize + EQUIPMENT_SIZE;
+        return container.getContainerSize() + EQUIPMENT_MAPPING.length;
     }
 
     @Override
@@ -38,28 +35,28 @@ public class TestEntityInventory implements Container {
 
     @Override
     public ItemStack getItem(int i) {
-        if(i < containerSize)
+        if(i < container.getContainerSize())
             return container.getItem(i);
         return equipment.get(mapEquipmentSlot(i));
     }
 
     @Override
     public ItemStack removeItem(int i, int j) {
-        if(i < containerSize)
+        if(i < container.getContainerSize())
             return container.removeItem(i, j);
         return equipment.set(mapEquipmentSlot(i), ItemStack.EMPTY);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int i) {
-        if(i < containerSize)
+        if(i < container.getContainerSize())
             return container.removeItemNoUpdate(i);
         return equipment.set(mapEquipmentSlot(i), ItemStack.EMPTY);
     }
 
     @Override
     public void setItem(int i, ItemStack itemStack) {
-        if(i < containerSize) {
+        if(i < container.getContainerSize()) {
             container.setItem(i, itemStack);
             return;
         }
