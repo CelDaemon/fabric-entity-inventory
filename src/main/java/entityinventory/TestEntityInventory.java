@@ -1,24 +1,15 @@
 package entityinventory;
 
-import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
-import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.stream.IntStream;
-
 public class TestEntityInventory implements Container {
-    public static final Int2ReferenceMap<EquipmentSlot> EQUIPMENT_MAPPING;
-    static {
-        final var slots = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
-        EQUIPMENT_MAPPING = new Int2ReferenceOpenHashMap<>(IntStream.range(0, slots.length).toArray(), slots);
-    }
-    public static final int EQUIPMENT_SIZE = EQUIPMENT_MAPPING.size();
+    public static final EquipmentSlot[] EQUIPMENT_MAPPING = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+    public static final int EQUIPMENT_SIZE = EQUIPMENT_MAPPING.length;
     private final Container container;
     private final int containerSize;
     private final EntityEquipment equipment;
@@ -32,7 +23,7 @@ public class TestEntityInventory implements Container {
     }
 
     private EquipmentSlot mapEquipmentSlot(int slot) {
-        return EQUIPMENT_MAPPING.get(slot - containerSize);
+        return EQUIPMENT_MAPPING[slot - containerSize];
     }
 
     @Override

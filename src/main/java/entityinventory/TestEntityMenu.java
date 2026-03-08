@@ -2,10 +2,8 @@ package entityinventory;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -13,7 +11,9 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.Debug;
 
+@Debug(export = true)
 public class TestEntityMenu extends AbstractContainerMenu {
     private final Container container;
 
@@ -24,8 +24,8 @@ public class TestEntityMenu extends AbstractContainerMenu {
         super(Menus.TEST_MENU, containerId);
         this.container = container;
 
-        for (var i = 0; i < 4; i++) {
-            final var equipmentType = TestEntityInventory.EQUIPMENT_MAPPING.get(i);
+        for (var i = 0; i < TestEntityInventory.EQUIPMENT_SIZE; i++) {
+            final var equipmentType = TestEntityInventory.EQUIPMENT_MAPPING[i];
             addSlot(
                     new Slot(
                         container,
@@ -70,37 +70,37 @@ public class TestEntityMenu extends AbstractContainerMenu {
 
 
     @Override
-    public ItemStack quickMoveStack(Player player, int i) {
-        final var slot = this.slots.get(i);
+    public ItemStack quickMoveStack(Player player, int slotId) {
+        final var sourceSlot = this.slots.get(slotId);
 
-        if(!slot.hasItem())
+        if(!sourceSlot.hasItem())
             return ItemStack.EMPTY;
 
-        final var itemStack2 = slot.getItem();
-        final var itemStack = itemStack2.copy();
+        final var sourceItem = sourceSlot.getItem();
+        final var newItem = sourceItem.copy();
 
         final var containerSize = container.getContainerSize();
-        if (i < containerSize) {
-            if (!this.moveItemStackTo(itemStack2, containerSize, containerSize + Inventory.INVENTORY_SIZE, true)) {
+        if (slotId < containerSize) {
+            if (!this.moveItemStackTo(sourceItem, containerSize, containerSize + Inventory.INVENTORY_SIZE, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!this.moveItemStackTo(itemStack2, 0, containerSize, false)) {
+        } else if (!this.moveItemStackTo(sourceItem, 0, containerSize, false)) {
             return ItemStack.EMPTY;
         }
 
-        if (itemStack2.isEmpty()) {
-            slot.setByPlayer(ItemStack.EMPTY);
+        if (sourceItem.isEmpty()) {
+            sourceSlot.setByPlayer(ItemStack.EMPTY);
         } else {
-            slot.setChanged();
+            sourceSlot.setChanged();
         }
 
-        if (itemStack2.getCount() == itemStack.getCount()) {
+        if (sourceItem.getCount() == newItem.getCount()) {
             return ItemStack.EMPTY;
         }
 
-        slot.onTake(player, itemStack2);
+        sourceSlot.onTake(player, sourceItem);
 
-        return itemStack;
+        return newItem;
     }
 
     @Override
