@@ -5,7 +5,6 @@ import net.minecraft.world.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -16,7 +15,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-public class TestEntity extends LivingEntity implements MenuProvider, InventoryCarrier {
+public class TestEntity extends LivingEntity implements MenuProvider {
     public static final int CONTAINER_SIZE = 9;
     private final SimpleContainer container = new SimpleContainer(CONTAINER_SIZE);
     private final TestEntityInventory inventory = new TestEntityInventory(container, equipment, this);
@@ -48,18 +47,13 @@ public class TestEntity extends LivingEntity implements MenuProvider, InventoryC
     @Override
     protected void addAdditionalSaveData(ValueOutput valueOutput) {
         super.addAdditionalSaveData(valueOutput);
-        writeInventoryToTag(valueOutput);
+        ContainerHelper.saveAllItems(valueOutput, container.getItems());
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput valueInput) {
         super.readAdditionalSaveData(valueInput);
-        readInventoryFromTag(valueInput);
-    }
-
-    @Override
-    public SimpleContainer getInventory() {
-        return container;
+        ContainerHelper.loadAllItems(valueInput, container.getItems());
     }
 
     @Override
