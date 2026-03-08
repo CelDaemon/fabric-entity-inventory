@@ -1,16 +1,16 @@
 package net.voidgroup.proto.entityinventory.mixin;
 
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
-@Mixin(InventoryMenu.class)
+@Mixin(PlayerScreenHandler.class)
 public interface InventoryMenuAccessor {
-    @Accessor("TEXTURE_EMPTY_SLOTS")
+    @Accessor("EMPTY_ARMOR_SLOT_TEXTURES")
     static Map<EquipmentSlot, Identifier> getTextureEmptySlots() {
         return Map.of();
     }

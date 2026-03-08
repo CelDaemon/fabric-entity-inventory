@@ -1,21 +1,21 @@
 package net.voidgroup.proto.entityinventory;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import org.jspecify.annotations.Nullable;
 
-public class TestEntityMenu extends AbstractContainerMenu {
-    private final Container container;
+public class TestEntityMenu extends ScreenHandler {
+    private final Inventory container;
 
-    public TestEntityMenu(int containerId, Inventory inventory) {
-        this(containerId, inventory, new SimpleContainer(TestEntityInventory.INVENTORY_SIZE + TestEntityInventory.EQUIPMENT_MAPPING.length), null);
+    public TestEntityMenu(int containerId, PlayerInventory inventory) {
+        this(containerId, inventory, new SimpleInventory(TestEntityInventory.INVENTORY_SIZE + TestEntityInventory.EQUIPMENT_MAPPING.length), null);
     }
-    public TestEntityMenu(int containerId, Inventory inventory, Container container, @Nullable TestEntity entity) {
+    public TestEntityMenu(int containerId, PlayerInventory inventory, Inventory container, @Nullable TestEntity entity) {
         super(Menus.TEST_MENU, containerId);
         this.container = container;
 
@@ -25,7 +25,7 @@ public class TestEntityMenu extends AbstractContainerMenu {
                             container,
                             TestEntityInventory.INVENTORY_SIZE + i,
                             8,
-                            8 + AbstractContainerMenu.SLOT_SIZE * i,
+                            8 + ScreenHandler.field_52558 * i,
                             TestEntityInventory.EQUIPMENT_MAPPING[i],
                             entity
                     )
@@ -37,52 +37,52 @@ public class TestEntityMenu extends AbstractContainerMenu {
                         new Slot(
                                 container,
                                 x + y * 3,
-                                62 + x * AbstractContainerMenu.SLOT_SIZE,
-                                17 + y * AbstractContainerMenu.SLOT_SIZE
+                                62 + x * ScreenHandler.field_52558,
+                                17 + y * ScreenHandler.field_52558
                         )
                 );
         }
 
-        addStandardInventorySlots(inventory, 8, 84);
+        addPlayerSlots(inventory, 8, 84);
     }
 
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slotId) {
+    public ItemStack quickMove(PlayerEntity player, int slotId) {
         final var sourceSlot = slots.get(slotId);
 
-        if(!sourceSlot.hasItem())
+        if(!sourceSlot.hasStack())
             return ItemStack.EMPTY;
 
-        final var sourceItem = sourceSlot.getItem();
+        final var sourceItem = sourceSlot.getStack();
         final var newItem = sourceItem.copy();
 
-        final var containerSize = container.getContainerSize();
+        final var containerSize = container.size();
         if (slotId < containerSize) {
-            if (!moveItemStackTo(sourceItem, containerSize, containerSize + Inventory.INVENTORY_SIZE, true)) {
+            if (!insertItem(sourceItem, containerSize, containerSize + PlayerInventory.MAIN_SIZE, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(sourceItem, 0, containerSize, false)) {
+        } else if (!insertItem(sourceItem, 0, containerSize, false)) {
             return ItemStack.EMPTY;
         }
 
         if (sourceItem.isEmpty()) {
-            sourceSlot.setByPlayer(ItemStack.EMPTY);
+            sourceSlot.setStack(ItemStack.EMPTY);
         } else {
-            sourceSlot.setChanged();
+            sourceSlot.markDirty();
         }
 
         if (sourceItem.getCount() == newItem.getCount()) {
             return ItemStack.EMPTY;
         }
 
-        sourceSlot.onTake(player, sourceItem);
+        sourceSlot.onTakeItem(player, sourceItem);
 
         return newItem;
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return container.stillValid(player);
+    public boolean canUse(PlayerEntity player) {
+        return container.canPlayerUse(player);
     }
 }

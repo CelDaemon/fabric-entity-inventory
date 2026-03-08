@@ -1,88 +1,91 @@
 package net.voidgroup.proto.entityinventory;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.StackReference;
+import net.minecraft.inventory.StackWithSlot;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+import org.jspecify.annotations.Nullable;
 
-public class TestEntity extends Mob implements MenuProvider {
+public class TestEntity extends MobEntity implements NamedScreenHandlerFactory {
     public static final String INVENTORY_TAG = "Inventory";
     private final TestEntityInventory inventory = new TestEntityInventory(equipment, this);
-    protected TestEntity(EntityType<? extends Mob> type, Level level) {
+    protected TestEntity(EntityType<? extends MobEntity> type, World level) {
         super(type, level);
     }
 
     @Override
-    protected void registerGoals() {
-        goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 6));
+    protected void initGoals() {
+        goalSelector.add(0, new LookAtEntityGoal(this, PlayerEntity.class, 6));
     }
 
     @Override
-    public HumanoidArm getMainArm() {
-        return HumanoidArm.RIGHT;
+    public Arm getMainArm() {
+        return Arm.RIGHT;
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if(hand != InteractionHand.MAIN_HAND)
-            return InteractionResult.PASS;
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if(hand != Hand.MAIN_HAND)
+            return ActionResult.PASS;
 
-        if(!level().isClientSide()) {
-            player.openMenu(this);
+        if(!getEntityWorld().isClient()) {
+            player.openHandledScreen(this);
         }
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+    public @Nullable ScreenHandler createMenu(int containerId, PlayerInventory inventory, PlayerEntity player) {
         return new TestEntityMenu(containerId, player.getInventory(), this.inventory, this);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        inventory.save(output.list(INVENTORY_TAG, ItemStackWithSlot.CODEC));
+    protected void writeCustomData(WriteView output) {
+        super.writeCustomData(output);
+        inventory.save(output.getListAppender(INVENTORY_TAG, StackWithSlot.CODEC));
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        inventory.load(input.listOrEmpty(INVENTORY_TAG, ItemStackWithSlot.CODEC));
+    protected void readCustomData(ReadView input) {
+        super.readCustomData(input);
+        inventory.load(input.getTypedListView(INVENTORY_TAG, StackWithSlot.CODEC));
     }
 
     @Override
-    protected void dropEquipment(ServerLevel level) {
-        super.dropEquipment(level);
+    protected void dropInventory(ServerWorld level) {
+        super.dropInventory(level);
         destroyVanishingCursedItems();
         inventory.dropAll();
     }
 
     private void destroyVanishingCursedItems() {
-        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-            final var stack = this.inventory.getItem(i);
-            if (!stack.isEmpty() && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
-                this.inventory.removeItemNoUpdate(i);
+        for (int i = 0; i < this.inventory.size(); i++) {
+            final var stack = this.inventory.getStack(i);
+            if (!stack.isEmpty() && EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
+                this.inventory.removeStack(i);
             }
         }
     }
 
     @Override
-    public @Nullable SlotAccess getSlot(int i) {
-        if(i >= InventoryMenu.INV_SLOT_START && i < InventoryMenu.INV_SLOT_START + TestEntityInventory.INVENTORY_SIZE)
-            return inventory.getSlot(i - InventoryMenu.INV_SLOT_START);
-        return super.getSlot(i);
+    public @Nullable StackReference getStackReference(int i) {
+        if(i >= PlayerScreenHandler.EQUIPMENT_END && i < PlayerScreenHandler.EQUIPMENT_END + TestEntityInventory.INVENTORY_SIZE)
+            return inventory.getStackReference(i - PlayerScreenHandler.EQUIPMENT_END);
+        return super.getStackReference(i);
     }
 }

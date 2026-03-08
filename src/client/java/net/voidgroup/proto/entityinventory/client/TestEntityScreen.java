@@ -2,31 +2,31 @@ package net.voidgroup.proto.entityinventory.client;
 
 import net.voidgroup.proto.entityinventory.EntityInventory;
 import net.voidgroup.proto.entityinventory.TestEntityMenu;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
-public class TestEntityScreen extends AbstractContainerScreen<TestEntityMenu> {
+public class TestEntityScreen extends HandledScreen<TestEntityMenu> {
     private static final Identifier CONTAINER_LOCATION = EntityInventory.id("textures/gui/container/test_entity.png");
-    public TestEntityScreen(TestEntityMenu menu, Inventory inventory, Component title) {
+    public TestEntityScreen(TestEntityMenu menu, PlayerInventory inventory, Text title) {
         super(menu, inventory, title);
-        titleLabelX = (imageWidth - font.width(this.title)) / 2;
-        inventoryLabelX = imageWidth - font.width(playerInventoryTitle) - 8;
+        titleX = (backgroundWidth - textRenderer.getWidth(this.title)) / 2;
+        playerInventoryTitleX = backgroundWidth - textRenderer.getWidth(playerInventoryTitle) - 8;
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float f, int cursorX, int cursorY) {
-        int originX = (width - imageWidth) / 2;
-        int originY = (height - imageHeight) / 2;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_LOCATION, originX, originY, 0.0F, 0.0F, imageWidth, imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+    protected void drawBackground(DrawContext guiGraphics, float f, int cursorX, int cursorY) {
+        int centerX = (width - backgroundWidth) / 2;
+        int centerY = (height - backgroundHeight) / 2;
+        guiGraphics.drawTexture(RenderPipelines.GUI_TEXTURED, CONTAINER_LOCATION, centerX, centerY, 0.0F, 0.0F, backgroundWidth, backgroundHeight, field_52802, field_52803);
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int cursorX, int cursorY, float f) {
+    public void render(DrawContext guiGraphics, int cursorX, int cursorY, float f) {
         super.render(guiGraphics, cursorX, cursorY, f);
-        renderTooltip(guiGraphics, cursorX, cursorY);
+        drawMouseoverTooltip(guiGraphics, cursorX, cursorY);
     }
 }

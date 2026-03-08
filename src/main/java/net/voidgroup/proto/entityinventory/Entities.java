@@ -1,21 +1,21 @@
 package net.voidgroup.proto.entityinventory;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 
 public class Entities {
     public static final EntityType<TestEntity> TEST_ENTITY = register("test",
-            EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE)
+            EntityType.Builder.create(TestEntity::new, SpawnGroup.CREATURE)
     );
 
     private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-        final var key = ResourceKey.create(Registries.ENTITY_TYPE, EntityInventory.id(name));
-        return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
+        final var key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, EntityInventory.id(name));
+        return Registry.register(Registries.ENTITY_TYPE, key, builder.build(key));
     }
 
     public static void init() {

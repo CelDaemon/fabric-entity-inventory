@@ -1,44 +1,44 @@
 package net.voidgroup.proto.entityinventory.client;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.PlayerModelType;
+import net.minecraft.entity.player.PlayerSkinType;
+import net.minecraft.text.Text;
 import net.voidgroup.proto.entityinventory.TestEntity;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.ArmorModelSet;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.render.entity.BipedEntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EquipmentModelData;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.util.Identifier;
 
-public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, AvatarRenderState, PlayerModel> {
-    public TestEntityRenderer(EntityRendererProvider.Context context) {
-        super(context, new PlayerModel(context.bakeLayer(ModelLayers.PLAYER), isSlim()), 0.7f);
-        addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(ModelLayers.PLAYER_ARMOR, context.getModelSet(), x -> new PlayerModel(x, isSlim())),
+public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, PlayerEntityRenderState, PlayerEntityModel> {
+    public TestEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new PlayerEntityModel(context.getPart(EntityModelLayers.PLAYER), isSlim()), 0.7f);
+        addFeature(new ArmorFeatureRenderer<>(this, EquipmentModelData.mapToEntityModel(EntityModelLayers.PLAYER_EQUIPMENT, context.getEntityModels(), x -> new PlayerEntityModel(x, isSlim())),
                 context.getEquipmentRenderer()));
     }
 
     @Override
-    public AvatarRenderState createRenderState() {
-        return new AvatarRenderState();
+    public PlayerEntityRenderState createRenderState() {
+        return new PlayerEntityRenderState();
     }
 
     @Override
-    public void extractRenderState(TestEntity entity, AvatarRenderState state, float f) {
-        HumanoidMobRenderer.extractHumanoidRenderState(entity, state, f, itemModelResolver);
-        state.skin = EntityInventoryClient.skin.get();
-        super.extractRenderState(entity, state, f);
-        state.nameTag = Component.literal(EntityInventoryClient.profile.get().name().orElseThrow());
+    public void updateRenderState(TestEntity entity, PlayerEntityRenderState state, float f) {
+        BipedEntityRenderer.updateBipedRenderState(entity, state, f, itemModelResolver);
+        state.skinTextures = EntityInventoryClient.skin.get();
+        super.updateRenderState(entity, state, f);
+        state.displayName = Text.literal(EntityInventoryClient.profile.get().getName().orElseThrow());
     }
 
     @Override
-    public Identifier getTextureLocation(AvatarRenderState state) {
-        return state.skin.body().texturePath();
+    public Identifier getTexture(PlayerEntityRenderState state) {
+        return state.skinTextures.body().texturePath();
     }
 
     private static boolean isSlim() {
-        return EntityInventoryClient.skin.get().model() == PlayerModelType.SLIM;
+        return EntityInventoryClient.skin.get().model() == PlayerSkinType.SLIM;
     }
 }
