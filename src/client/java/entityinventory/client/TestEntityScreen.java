@@ -1,5 +1,6 @@
-package entityinventory;
+package entityinventory.client;
 
+import entityinventory.TestEntityMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;

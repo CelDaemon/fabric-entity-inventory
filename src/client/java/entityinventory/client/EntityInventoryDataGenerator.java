@@ -1,6 +1,6 @@
-package entityinventory;
+package entityinventory.client;
 
-import entityinventory.datagen.EnglishLanguageProvider;
+import entityinventory.client.datagen.EnglishLanguageProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 

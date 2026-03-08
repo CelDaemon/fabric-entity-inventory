@@ -1,5 +1,6 @@
-package entityinventory;
+package entityinventory.client;
 
+import entityinventory.TestEntity;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.ArmorModelSet;

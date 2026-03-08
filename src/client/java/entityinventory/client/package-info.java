@@ -1,4 +1,4 @@
 @NotNullByDefault
-package entityinventory;
+package entityinventory.client;
 
 import org.jetbrains.annotations.NotNullByDefault;

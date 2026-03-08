@@ -1,4 +1,4 @@
-package entityinventory.datagen;
+package entityinventory.client.datagen;
 
 import entityinventory.Entities;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;

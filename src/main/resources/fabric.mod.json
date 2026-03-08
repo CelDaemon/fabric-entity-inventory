@@ -19,10 +19,10 @@
 			"entityinventory.EntityInventory"
 		],
 		"client": [
-			"entityinventory.EntityInventoryClient"
+          "entityinventory.client.EntityInventoryClient"
 		],
 		"fabric-datagen": [
-			"entityinventory.EntityInventoryDataGenerator"
+          "entityinventory.client.EntityInventoryDataGenerator"
 		]
 	},
 	"depends": {

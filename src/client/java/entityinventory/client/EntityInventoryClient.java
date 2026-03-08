@@ -1,5 +1,8 @@
-package entityinventory;
+package entityinventory.client;
 
+import entityinventory.Entities;
+import entityinventory.EntityInventory;
+import entityinventory.Menus;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.gui.screens.MenuScreens;
