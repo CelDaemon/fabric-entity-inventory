@@ -8,7 +8,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
-import org.spongepowered.asm.mixin.Debug;
 
 public class TestEntityMenu extends AbstractContainerMenu {
     private final Container container;
@@ -32,8 +31,8 @@ public class TestEntityMenu extends AbstractContainerMenu {
                     )
             );
 
-        for (var x = 0; x < 3; x++) {
-            for(var y = 0; y < 3; y++)
+        for (var y = 0; y < 3; y++) {
+            for(var x = 0; x < 3; x++)
                 addSlot(
                         new Slot(
                                 container,
