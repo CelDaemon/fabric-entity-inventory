@@ -9,6 +9,8 @@ import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -62,7 +64,17 @@ public class TestEntity extends LivingEntity implements MenuProvider, InventoryC
 
     @Override
     protected void dropEquipment(ServerLevel serverLevel) {
-        equipment.dropAll(this);
-        container.removeAllItems().forEach(x -> this.drop(x, true, false));
+        super.dropEquipment(serverLevel);
+        destroyVanishingCursedItems();
+        inventory.dropAll();
+    }
+
+    private void destroyVanishingCursedItems() {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            final var stack = this.inventory.getItem(i);
+            if (!stack.isEmpty() && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
+                this.inventory.removeItemNoUpdate(i);
+            }
+        }
     }
 }

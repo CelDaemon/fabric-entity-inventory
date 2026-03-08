@@ -5,9 +5,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class TestEntityArmorSlot extends Slot {
@@ -24,6 +27,12 @@ public class TestEntityArmorSlot extends Slot {
     public boolean mayPlace(ItemStack newStack) {
         final var equippable = newStack.get(DataComponents.EQUIPPABLE);
         return equippable != null && equippable.slot() == equipmentSlot && super.mayPlace(newStack);
+    }
+
+    @Override
+    public boolean mayPickup(Player player) {
+        return (player.isCreative() || !EnchantmentHelper.has(getItem(), EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE))
+                && super.mayPickup(player);
     }
 
     @Override

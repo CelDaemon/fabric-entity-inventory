@@ -1,6 +1,7 @@
 package entityinventory;
 
 import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,11 +10,11 @@ import net.minecraft.world.item.ItemStack;
 
 public class TestEntityInventory implements Container {
     public static final EquipmentSlot[] EQUIPMENT_MAPPING = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
-    private final Container container;
+    private final SimpleContainer container;
     private final EntityEquipment equipment;
     private final LivingEntity entity;
 
-    public TestEntityInventory(Container container, EntityEquipment equipment, LivingEntity entity) {
+    public TestEntityInventory(SimpleContainer container, EntityEquipment equipment, LivingEntity entity) {
         this.container = container;
         this.equipment = equipment;
         this.entity = entity;
@@ -77,5 +78,10 @@ public class TestEntityInventory implements Container {
     public void clearContent() {
         container.clearContent();
         equipment.clear();
+    }
+
+    public void dropAll() {
+        equipment.dropAll(entity);
+        container.removeAllItems().forEach(x -> entity.drop(x, true, false));
     }
 }
