@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TestEntityMenu extends AbstractContainerMenu {
     private final Container container;

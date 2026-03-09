@@ -1,17 +1,24 @@
 package entityinventory;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemStackWithSlot;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TestEntity extends LivingEntity implements MenuProvider {
     public static final String INVENTORY_TAG = "Inventory";
@@ -67,5 +74,12 @@ public class TestEntity extends LivingEntity implements MenuProvider {
                 this.inventory.removeItemNoUpdate(i);
             }
         }
+    }
+
+    @Override
+    public @Nullable SlotAccess getSlot(int i) {
+        if(i >= InventoryMenu.INV_SLOT_START && i < InventoryMenu.INV_SLOT_START + TestEntityInventory.INVENTORY_SIZE)
+            return inventory.getSlot(i - InventoryMenu.INV_SLOT_START);
+        return super.getSlot(i);
     }
 }
