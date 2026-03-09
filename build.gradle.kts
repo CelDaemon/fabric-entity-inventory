@@ -15,8 +15,6 @@ repositories {
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/entity-inventory.classtweaker")
-
 	splitEnvironmentSourceSets()
 
 	mods {

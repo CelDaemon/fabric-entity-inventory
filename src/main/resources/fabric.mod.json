@@ -31,5 +31,5 @@
 		"java": ">=21",
 		"fabric-api": "*"
 	},
-	"accessWidener": "entity-inventory.classtweaker"
+	"mixins": ["entity-inventory.mixin.json"]
 }

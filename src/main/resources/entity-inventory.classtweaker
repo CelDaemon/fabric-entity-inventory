@@ -1,2 +1,0 @@
-classTweaker v1 named
-accessible field net/minecraft/world/inventory/InventoryMenu TEXTURE_EMPTY_SLOTS Ljava/util/Map;

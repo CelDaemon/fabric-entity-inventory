@@ -1,64 +1,69 @@
 package entityinventory;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TestEntityInventory implements Container {
+    public static final int INVENTORY_SIZE = 9;
     public static final EquipmentSlot[] EQUIPMENT_MAPPING = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
-    private final SimpleContainer container;
+    private final NonNullList<ItemStack> items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
     private final EntityEquipment equipment;
     private final LivingEntity entity;
 
-    public TestEntityInventory(SimpleContainer container, EntityEquipment equipment, LivingEntity entity) {
-        this.container = container;
+    public TestEntityInventory(EntityEquipment equipment, LivingEntity entity) {
         this.equipment = equipment;
         this.entity = entity;
     }
 
     private EquipmentSlot mapEquipmentSlot(int slot) {
-        return EQUIPMENT_MAPPING[slot - container.getContainerSize()];
+        return EQUIPMENT_MAPPING[slot - INVENTORY_SIZE];
     }
 
     @Override
     public int getContainerSize() {
-        return container.getContainerSize() + EQUIPMENT_MAPPING.length;
+        return INVENTORY_SIZE + EQUIPMENT_MAPPING.length;
     }
 
     @Override
     public boolean isEmpty() {
-        return equipment.isEmpty() && container.isEmpty();
+        return items.isEmpty() && equipment.isEmpty();
     }
 
     @Override
     public ItemStack getItem(int slotId) {
-        if(slotId < container.getContainerSize())
-            return container.getItem(slotId);
+        if(slotId < INVENTORY_SIZE)
+            return items.get(slotId);
         return equipment.get(mapEquipmentSlot(slotId));
     }
 
     @Override
     public ItemStack removeItem(int slotId, int count) {
-        if(slotId < container.getContainerSize())
-            return container.removeItem(slotId, count);
-        return equipment.set(mapEquipmentSlot(slotId), ItemStack.EMPTY);
+        if(slotId < INVENTORY_SIZE)
+            return ContainerHelper.removeItem(items, slotId, count);
+
+        return equipment.get(mapEquipmentSlot(slotId)).split(count);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slotId) {
-        if(slotId < container.getContainerSize())
-            return container.removeItemNoUpdate(slotId);
+        if(slotId < INVENTORY_SIZE)
+            return items.set(slotId, ItemStack.EMPTY);
         return equipment.set(mapEquipmentSlot(slotId), ItemStack.EMPTY);
     }
 
     @Override
     public void setItem(int slotId, ItemStack newItem) {
-        if(slotId < container.getContainerSize()) {
-            container.setItem(slotId, newItem);
+        if(slotId < INVENTORY_SIZE) {
+            items.set(slotId, newItem);
             return;
         }
         equipment.set(mapEquipmentSlot(slotId), newItem);
@@ -66,22 +71,39 @@ public class TestEntityInventory implements Container {
 
     @Override
     public void setChanged() {
-        container.setChanged();
+
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return entity.isAlive() && player.isWithinEntityInteractionRange(entity.getBoundingBox(), 4.0) && container.stillValid(player);
+        return entity.isAlive() && player.isWithinEntityInteractionRange(entity.getBoundingBox(), 4.0);
     }
 
     @Override
     public void clearContent() {
-        container.clearContent();
+        items.clear();
         equipment.clear();
     }
 
     public void dropAll() {
+        for (int i = 0; i < items.size(); i++) {
+            entity.drop(items.set(i, ItemStack.EMPTY), true, false);
+        }
         equipment.dropAll(entity);
-        container.removeAllItems().forEach(x -> entity.drop(x, true, false));
+    }
+
+    public void save(ValueOutput.TypedOutputList<ItemStackWithSlot> output) {
+        for (int i = 0; i < items.size(); i++) {
+            final var item = items.get(i);
+            if(item.isEmpty())
+                continue;
+            output.add(new ItemStackWithSlot(i, item));
+        }
+    }
+
+    public void load(ValueInput.TypedInputList<ItemStackWithSlot> input) {
+        for (final var item : input) {
+            items.set(item.slot(), item.stack());
+        }
     }
 }

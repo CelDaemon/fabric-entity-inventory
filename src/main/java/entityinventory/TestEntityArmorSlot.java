@@ -1,12 +1,12 @@
 package entityinventory;
 
+import entityinventory.mixin.InventoryMenuAccessor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
@@ -37,7 +37,7 @@ public class TestEntityArmorSlot extends Slot {
 
     @Override
     public @Nullable Identifier getNoItemIcon() {
-        return InventoryMenu.TEXTURE_EMPTY_SLOTS.get(slotType);
+        return InventoryMenuAccessor.getTextureEmptySlots().get(slotType);
     }
 
     @Override

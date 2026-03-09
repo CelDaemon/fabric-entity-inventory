@@ -13,7 +13,7 @@ public class TestEntityMenu extends AbstractContainerMenu {
     private final Container container;
 
     public TestEntityMenu(int containerId, Inventory inventory) {
-        this(containerId, inventory, new SimpleContainer(TestEntity.CONTAINER_SIZE + TestEntityInventory.EQUIPMENT_MAPPING.length), null);
+        this(containerId, inventory, new SimpleContainer(TestEntityInventory.INVENTORY_SIZE + TestEntityInventory.EQUIPMENT_MAPPING.length), null);
     }
     public TestEntityMenu(int containerId, Inventory inventory, Container container, @Nullable TestEntity entity) {
         super(Menus.TEST_MENU, containerId);
@@ -23,7 +23,7 @@ public class TestEntityMenu extends AbstractContainerMenu {
             addSlot(
                     new TestEntityArmorSlot(
                             container,
-                            TestEntity.CONTAINER_SIZE + i,
+                            TestEntityInventory.INVENTORY_SIZE + i,
                             8,
                             8 + AbstractContainerMenu.SLOT_SIZE * i,
                             TestEntityInventory.EQUIPMENT_MAPPING[i],
