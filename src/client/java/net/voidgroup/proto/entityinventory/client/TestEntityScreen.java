@@ -21,7 +21,7 @@ public class TestEntityScreen extends AbstractContainerScreen<TestEntityMenu> {
     protected void renderBg(GuiGraphics guiGraphics, float f, int cursorX, int cursorY) {
         int originX = (width - imageWidth) / 2;
         int originY = (height - imageHeight) / 2;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_LOCATION, originX, originY, 0.0F, 0.0F, imageWidth, imageHeight, 256, 256);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_LOCATION, originX, originY, 0.0F, 0.0F, imageWidth, imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
     }
 
     @Override

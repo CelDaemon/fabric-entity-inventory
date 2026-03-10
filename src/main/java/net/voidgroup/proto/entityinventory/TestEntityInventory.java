@@ -42,6 +42,7 @@ public class TestEntityInventory implements Container {
     public ItemStack getItem(int slotId) {
         if(slotId < INVENTORY_SIZE)
             return items.get(slotId);
+
         return equipment.get(mapEquipmentSlot(slotId));
     }
 
@@ -57,6 +58,7 @@ public class TestEntityInventory implements Container {
     public ItemStack removeItemNoUpdate(int slotId) {
         if(slotId < INVENTORY_SIZE)
             return items.set(slotId, ItemStack.EMPTY);
+
         return equipment.set(mapEquipmentSlot(slotId), ItemStack.EMPTY);
     }
 

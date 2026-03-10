@@ -49,7 +49,7 @@ public class TestEntityMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player player, int slotId) {
-        final var sourceSlot = this.slots.get(slotId);
+        final var sourceSlot = slots.get(slotId);
 
         if(!sourceSlot.hasItem())
             return ItemStack.EMPTY;
@@ -59,10 +59,10 @@ public class TestEntityMenu extends AbstractContainerMenu {
 
         final var containerSize = container.getContainerSize();
         if (slotId < containerSize) {
-            if (!this.moveItemStackTo(sourceItem, containerSize, containerSize + Inventory.INVENTORY_SIZE, true)) {
+            if (!moveItemStackTo(sourceItem, containerSize, containerSize + Inventory.INVENTORY_SIZE, true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!this.moveItemStackTo(sourceItem, 0, containerSize, false)) {
+        } else if (!moveItemStackTo(sourceItem, 0, containerSize, false)) {
             return ItemStack.EMPTY;
         }
 
