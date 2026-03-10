@@ -1,4 +1,4 @@
-package entityinventory;
+package net.voidgroup.proto.entityinventory;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;

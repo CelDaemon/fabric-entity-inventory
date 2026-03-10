@@ -16,13 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"entityinventory.EntityInventory"
+			"net.voidgroup.proto.entityinventory.EntityInventory"
 		],
 		"client": [
-          "entityinventory.client.EntityInventoryClient"
+			"net.voidgroup.proto.entityinventory.client.EntityInventoryClient"
 		],
 		"fabric-datagen": [
-          "entityinventory.client.EntityInventoryDataGenerator"
+			"net.voidgroup.proto.entityinventory.client.EntityInventoryDataGenerator"
 		]
 	},
 	"depends": {

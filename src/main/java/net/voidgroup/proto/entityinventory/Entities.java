@@ -1,4 +1,4 @@
-package entityinventory;
+package net.voidgroup.proto.entityinventory;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

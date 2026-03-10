@@ -1,4 +1,4 @@
-package entityinventory.mixin;
+package net.voidgroup.proto.entityinventory.mixin;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;

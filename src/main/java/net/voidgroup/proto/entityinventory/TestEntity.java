@@ -1,4 +1,4 @@
-package entityinventory;
+package net.voidgroup.proto.entityinventory;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;

@@ -1,4 +1,4 @@
 @NotNullByDefault
-package entityinventory;
+package net.voidgroup.proto.entityinventory;
 
 import org.jetbrains.annotations.NotNullByDefault;

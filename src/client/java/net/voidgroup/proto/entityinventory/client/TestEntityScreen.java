@@ -1,7 +1,7 @@
-package entityinventory.client;
+package net.voidgroup.proto.entityinventory.client;
 
-import entityinventory.EntityInventory;
-import entityinventory.TestEntityMenu;
+import net.voidgroup.proto.entityinventory.EntityInventory;
+import net.voidgroup.proto.entityinventory.TestEntityMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;

@@ -1,6 +1,6 @@
-package entityinventory.client.datagen;
+package net.voidgroup.proto.entityinventory.client.datagen;
 
-import entityinventory.Entities;
+import net.voidgroup.proto.entityinventory.Entities;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.core.HolderLookup;

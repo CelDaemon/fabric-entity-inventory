@@ -1,4 +1,4 @@
 @NotNullByDefault
-package entityinventory.client.datagen;
+package net.voidgroup.proto.entityinventory.client;
 
 import org.jetbrains.annotations.NotNullByDefault;
