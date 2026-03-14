@@ -1,5 +1,7 @@
 package net.voidgroup.proto.entityinventory.client;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.voidgroup.proto.entityinventory.TestEntity;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.player.PlayerModel;
@@ -13,8 +15,8 @@ import net.minecraft.resources.Identifier;
 
 public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, AvatarRenderState, PlayerModel> {
     public TestEntityRenderer(EntityRendererProvider.Context context) {
-        super(context, new PlayerModel(context.bakeLayer(ModelLayers.PLAYER), false), 0.7f);
-        addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(ModelLayers.PLAYER_ARMOR, context.getModelSet(), x -> new PlayerModel(x, false)),
+        super(context, new PlayerModel(context.bakeLayer(ModelLayers.PLAYER), isSlim()), 0.7f);
+        addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(ModelLayers.PLAYER_ARMOR, context.getModelSet(), x -> new PlayerModel(x, isSlim())),
                 context.getEquipmentRenderer()));
     }
 
@@ -28,10 +30,15 @@ public class TestEntityRenderer extends LivingEntityRenderer<TestEntity, AvatarR
         HumanoidMobRenderer.extractHumanoidRenderState(entity, state, f, itemModelResolver);
         state.skin = EntityInventoryClient.skin.get();
         super.extractRenderState(entity, state, f);
+        state.nameTag = Component.literal(EntityInventoryClient.profile.get().name().orElseThrow());
     }
 
     @Override
     public Identifier getTextureLocation(AvatarRenderState state) {
         return state.skin.body().texturePath();
+    }
+
+    private static boolean isSlim() {
+        return EntityInventoryClient.skin.get().model() == PlayerModelType.SLIM;
     }
 }

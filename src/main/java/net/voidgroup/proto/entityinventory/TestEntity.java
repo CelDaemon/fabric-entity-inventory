@@ -5,10 +5,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -25,6 +23,11 @@ public class TestEntity extends Mob implements MenuProvider {
     private final TestEntityInventory inventory = new TestEntityInventory(equipment, this);
     protected TestEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected void registerGoals() {
+        goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 6));
     }
 
     @Override

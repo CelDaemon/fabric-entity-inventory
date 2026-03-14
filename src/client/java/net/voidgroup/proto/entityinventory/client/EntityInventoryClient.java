@@ -1,5 +1,7 @@
 package net.voidgroup.proto.entityinventory.client;
 
+import net.minecraft.world.entity.decoration.Mannequin;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.voidgroup.proto.entityinventory.Entities;
 import net.voidgroup.proto.entityinventory.EntityInventory;
 import net.voidgroup.proto.entityinventory.Menus;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class EntityInventoryClient implements ClientModInitializer {
+    public static AtomicReference<ResolvableProfile> profile = new AtomicReference<>(Mannequin.DEFAULT_PROFILE);
     public static AtomicReference<PlayerSkin> skin = new AtomicReference<>(DefaultPlayerSkin.getDefaultSkin());
 
     @Override
@@ -28,12 +31,16 @@ public class EntityInventoryClient implements ClientModInitializer {
         );
 
         ClientLifecycleEvents.CLIENT_STARTED.register(
-                client -> client.getSkinManager().get(client.getGameProfile()
-                )
-                .thenApply(Optional::orElseThrow)
-                .thenAccept(skin::set).exceptionally(x -> {
-                    EntityInventory.LOGGER.error("Failed to load skin", x);
-                    throw new RuntimeException(x);
-                }));
+                client -> {
+                    final var profile = client.getGameProfile();
+                    EntityInventoryClient.profile.set(ResolvableProfile.createResolved(profile));
+                    client.getSkinManager().get(profile)
+                            .thenApply(Optional::orElseThrow)
+                    .thenAccept(skin::set).exceptionally(x -> {
+                        EntityInventory.LOGGER.error("Failed to load skin", x);
+                        throw new RuntimeException(x);
+                    });
+                }
+        );
     }
 }
