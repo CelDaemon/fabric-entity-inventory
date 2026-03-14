@@ -7,7 +7,7 @@ import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,10 +20,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
-public class TestEntity extends LivingEntity implements MenuProvider {
+public class TestEntity extends Mob implements MenuProvider {
     public static final String INVENTORY_TAG = "Inventory";
     private final TestEntityInventory inventory = new TestEntityInventory(equipment, this);
-    protected TestEntity(EntityType<? extends LivingEntity> type, Level level) {
+    protected TestEntity(EntityType<? extends Mob> type, Level level) {
         super(type, level);
     }
 

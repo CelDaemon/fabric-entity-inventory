@@ -18,7 +18,7 @@ public class EntityInventory implements ModInitializer {
 		Menus.init();
 		FabricDefaultAttributeRegistry.register(
 				Entities.TEST_ENTITY,
-				TestEntity.createLivingAttributes()
+				TestEntity.createMobAttributes()
 		);
 	}
 
