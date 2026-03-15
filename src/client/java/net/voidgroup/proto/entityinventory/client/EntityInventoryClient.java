@@ -1,5 +1,6 @@
 package net.voidgroup.proto.entityinventory.client;
 
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.voidgroup.proto.entityinventory.Entities;
@@ -13,6 +14,7 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.PlayerSkin;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class EntityInventoryClient implements ClientModInitializer {
@@ -32,14 +34,14 @@ public class EntityInventoryClient implements ClientModInitializer {
 
         ClientLifecycleEvents.CLIENT_STARTED.register(
                 client -> {
-                    final var profile = client.getGameProfile();
-                    EntityInventoryClient.profile.set(ResolvableProfile.createResolved(profile));
-                    client.getSkinManager().get(profile)
+                    final var profileFuture = CompletableFuture.supplyAsync(client::getGameProfile, Util.ioPool());
+                    profileFuture.thenAccept(profile -> EntityInventoryClient.profile.set(ResolvableProfile.createResolved(profile)));
+                    profileFuture.thenCompose(client.getSkinManager()::get)
                             .thenApply(Optional::orElseThrow)
-                    .thenAccept(skin::set).exceptionally(x -> {
-                        EntityInventory.LOGGER.error("Failed to load skin", x);
-                        throw new RuntimeException(x);
-                    });
+                            .thenAccept(skin::set).exceptionally(x -> {
+                                EntityInventory.LOGGER.error("Failed to retrieve entity looks", x);
+                                throw new RuntimeException(x);
+                            });
                 }
         );
     }
