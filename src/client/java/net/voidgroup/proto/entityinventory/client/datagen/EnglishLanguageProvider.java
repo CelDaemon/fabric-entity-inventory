@@ -1,14 +1,14 @@
 package net.voidgroup.proto.entityinventory.client.datagen;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.voidgroup.proto.entityinventory.Entities;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.core.HolderLookup;
 
 import java.util.concurrent.CompletableFuture;
 
 public class EnglishLanguageProvider extends FabricLanguageProvider {
-    public EnglishLanguageProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
+    public EnglishLanguageProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
         super(output, lookup);
     }
 
