@@ -1,3 +1,5 @@
+import net.fabricmc.loom.LoomGradleExtension
+
 plugins {
 	id("net.fabricmc.fabric-loom")
 	`maven-publish`

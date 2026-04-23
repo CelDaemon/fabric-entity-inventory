@@ -3,7 +3,12 @@
   "package": "net.voidgroup.proto.entityinventory.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "InventoryMenuAccessor"
+    "EntityMixin",
+    "InventoryMenuAccessor",
+    "ItemEntityMixin",
+    "MthMixin",
+    "TestMixin",
+    "Vec3Mixin"
   ],
   "injectors": {
     "defaultRequire": 1
