@@ -1,20 +1,21 @@
 package net.voidgroup.proto.entityinventory.client;
 
+import com.google.common.collect.Streams;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
+import it.unimi.dsi.fastutil.objects.ReferenceFloatPair;
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.phys.Vec3;
 import net.voidgroup.proto.entityinventory.Entities;
 import net.voidgroup.proto.entityinventory.EntityInventory;
 import net.voidgroup.proto.entityinventory.Menus;
@@ -24,17 +25,20 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.player.PlayerSkin;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
+import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityInventoryClient implements ClientModInitializer {
     public static AtomicReference<ResolvableProfile> profile = new AtomicReference<>(Mannequin.DEFAULT_PROFILE);
     public static AtomicReference<PlayerSkin> skin = new AtomicReference<>(DefaultPlayerSkin.getDefaultSkin());
-
+    @Nullable
+    public static Font font;
     @Override
     public void onInitializeClient() {
         EntityRenderers.register(
@@ -59,56 +63,81 @@ public class EntityInventoryClient implements ClientModInitializer {
                 }
         );
 
+        final var healthKey = RenderStateDataKey.<Map<Integer, Float>>create();
+
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> font = client.font);
+
+        LevelRenderEvents.END_EXTRACTION.register(context -> {
+            final var healthMap = Streams.stream(context.level().entitiesForRendering()).filter(x -> x instanceof Avatar)
+                    .map(x -> (Avatar) x)
+                    .map(x -> Map.entry(x.getId(), x.getHealth()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            context.levelState().setData(healthKey, healthMap);
+        });
+
         LevelRenderEvents.END_MAIN.register(context -> {
-            final var client = Minecraft.getInstance();
-            if (client.level == null || client.player == null) return;
+            assert font != null;
+            final var level = context.levelState();
+            final var cam = level.cameraRenderState;
+            final var camPos = cam.pos;
+            final var camOrient = cam.orientation;
 
-            Vec3 camPos = context.levelState().cameraRenderState.pos;
-            Matrix4f camRot = context.levelState().cameraRenderState.viewRotationMatrix;
-            Quaternionf camOrient = context.levelState().cameraRenderState.orientation;
-            final var font = client.font;
-
-            final var immediate = context.bufferSource();
-
-            float tickDelta = client.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+            final var buffer = context.bufferSource();
 
             final var matrices = context.poseStack();
 
-            for (final var player : client.level.players()) {
-                if (player == client.player && client.options.getCameraType().isFirstPerson()) continue;
+            final var healthMap = level.getDataOrDefault(healthKey, Map.of());
 
 
-                final var label = Component.literal("Health: ").withStyle(ChatFormatting.WHITE)
-                        .append(Component.literal(String.valueOf(player.getHealth())).withStyle(ChatFormatting.GOLD));
 
-                final var pos = player.oldPosition().lerp(player.position(), tickDelta).subtract(camPos);
+            final var players = level.entityRenderStates.stream()
+                    .filter(x -> x instanceof AvatarRenderState)
+                    .map(x -> (AvatarRenderState) x)
+                    .flatMap(x -> {
+                        final var health = healthMap.get(x.id);
+                        if(health == null)
+                            return Stream.empty();
+                        return Stream.of(ReferenceFloatPair.of(x, health));
+                    })
+                    .<ReferenceFloatPair<AvatarRenderState>>toArray(ReferenceFloatPair[]::new);
+
+            for (final ReferenceFloatPair<AvatarRenderState> entry : players) {
+                final var player = entry.key();
+                final var health = entry.valueFloat();
+                final var label = Component.literal(String.valueOf(health));
 
                 matrices.pushPose();
-                matrices.translate(pos.x, pos.y + player.getBbHeight() + 1, pos.z);
+                // no precision issues
+                matrices.translate(player.x - camPos.x, player.y + player.boundingBoxHeight + 1 - camPos.y, player.z - camPos.z);
                 matrices.mulPose(camOrient);
 
+                // precision issues
+//                matrices.translate(-camPos.x, -camPos.y, -camPos.z);
+//                matrices.translate(player.x, player.y + player.boundingBoxHeight + 1, player.z);
+
+//                matrices.last().pose().rotate(Mth.PI, 0, 1, 0);
                 matrices.scale(0.025f, -0.025f, 0.025f);
+                final var offset = -font.width(label) / 2f;
+                final var matrix = matrices.last().pose();
 
-
-                float labelWidth = -font.width(label) / 2f;
-                var matrix = matrices.last().pose();
 
                 font.drawInBatch(
                         label,
-                        labelWidth,
+                        offset,
                         0,
                         0xFFFFFFFF,
                         false,
                         matrix,
-                        immediate,
-                        Font.DisplayMode.SEE_THROUGH,
+                        buffer,
+                        Font.DisplayMode.NORMAL,
                         0x40000000,
                         15728880
                 );
+
                 matrices.popPose();
             }
 
-            immediate.endBatch();
+            buffer.endBatch();
         });
 
         CommonLifecycleEvents.TAGS_LOADED.register((a, b) -> {
